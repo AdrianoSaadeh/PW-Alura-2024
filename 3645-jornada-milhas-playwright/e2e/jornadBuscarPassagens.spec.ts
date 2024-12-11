@@ -14,6 +14,10 @@ test.describe("Buscar Passagens", () => {
         await paginaPrincipal.definirPassageirosBebes(1);
         await paginaPrincipal.fecharModalPassageiros();
 
-        await paginaPrincipal.definirOrigemEDestino("Rio Grande do Sul", "santa catarina");
+        await paginaPrincipal.definirOrigemEDestino("minas", "rio de janeiro");
+        await paginaPrincipal.definirData(new Date());
+        await paginaPrincipal.buscarPassagens();
+
+        await paginaPrincipal.estaMostrandoPassagem('Somente ida', 'Minas Gerais', 'Rio de Janeiro');
     });
 });

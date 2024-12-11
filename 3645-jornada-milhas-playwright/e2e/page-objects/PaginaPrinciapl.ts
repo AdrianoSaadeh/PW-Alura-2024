@@ -1,4 +1,4 @@
-import { Page, Locator } from "@playwright/test";
+import { Page, Locator, expect } from "@playwright/test";
     
 export default class PaginaPrincipal {
   private readonly page: Page;
@@ -19,39 +19,39 @@ export default class PaginaPrincipal {
 
   constructor(page: Page) {
     this.page = page;
-    this.botaoSomenteIda = page.getByTestId('botao-somente-ida');
+    this.botaoSomenteIda = page.getByTestId("botao-somente-ida");
 
-    this.botaoAbrirModalPassageiros = page.getByTestId('abrir-modal-passageiros');
+    this.botaoAbrirModalPassageiros = page.getByTestId("abrir-modal-passageiros");
     this.botaoIncrementarAdultos = page
-      .getByTestId('seletor-passageiro-adultos')
-      .getByRole('button', { name: 'adição' });
+      .getByTestId("seletor-passageiro-adultos")
+      .getByRole("button", { name: "adição" });
     this.botaoIncrementarCriancas = page
-      .getByTestId('seletor-passageiro-criancas')
-      .getByRole('button', { name: 'adição' });
+      .getByTestId("seletor-passageiro-criancas")
+      .getByRole("button", { name: "adição" });
     this.botaoIncrementarBebes = page
-      .getByTestId('seletor-passageiro-bebes')
-      .getByRole('button', { name: 'adição' });
+      .getByTestId("seletor-passageiro-bebes")
+      .getByRole("button", { name: "adição" });
 
-    this.botaoFecharModalPassageiros = page.getByTestId('fechar-modal-passageiros');
+    this.botaoFecharModalPassageiros = page.getByTestId("fechar-modal-passageiros");
 
     this.campoDropdownOrigem = page
-      .getByTestId('campo-dropdown-origem')
-      .getByLabel('Origem');
+      .getByTestId("campo-dropdown-origem")
+      .getByLabel("Origem");
     this.campoDropdownDestino = page
-      .getByTestId('campo-dropdown-destino')
-      .getByLabel('Destino');
+      .getByTestId("campo-dropdown-destino")
+      .getByLabel("Destino");
 
-    this.campoDataIda = page.getByTestId('campo-data-ida');
-    this.botaoBuscarPassagens = page.getByTestId('botao-buscar-passagens');
+    this.campoDataIda = page.getByTestId("campo-data-ida");
+    this.botaoBuscarPassagens = page.getByTestId("botao-buscar-passagens");
 
-    this.textoIdaVolta = page.getByTestId('texto-ida-volta');
-    this.containerOrigem = page.getByTestId('container-origem');
-    this.containerDestino = page.getByTestId('container-destino');
-    this.botaoComprar = page.getByTestId('botao-comprar');
+    this.textoIdaVolta = page.getByTestId("texto-ida-volta");
+    this.containerOrigem = page.getByTestId("container-origem");
+    this.containerDestino = page.getByTestId("container-destino");
+    this.botaoComprar = page.getByTestId("botao-comprar");
   }
 
   async visitar() {
-    await this.page.goto('/');
+    await this.page.goto("/");
   }
 
   async definirSomenteIda() {
@@ -86,9 +86,28 @@ export default class PaginaPrincipal {
 
   async definirOrigemEDestino(origem: string, destino: string) {
     await this.campoDropdownOrigem.fill(origem);
-    await this.campoDropdownOrigem.press('Enter');
+    await this.campoDropdownOrigem.press("Enter");
 
     await this.campoDropdownDestino.fill(destino);
-    await this.campoDropdownDestino.press('Enter');
+    await this.campoDropdownDestino.press("Enter");
+  }
+  async definirData(data: Date) {
+    const dataFormatada = data.toLocaleString("en-US", { dateStyle: "short" });
+    await this.campoDataIda.fill(dataFormatada);
+  }
+
+  async buscarPassagens() {
+    await this.botaoBuscarPassagens.click();
+  }
+
+  async estaMostrandoPassagem(
+    tipoTrajeto: "Somente ida" | "Ida e volta",
+    origem: string,
+    destino: string
+  ) {
+    await expect(this.textoIdaVolta).toHaveText(tipoTrajeto);
+    await expect(this.containerOrigem).toContainText(origem);
+    await expect(this.containerDestino).toContainText(destino);
+    await expect(this.botaoComprar).toBeVisible();
   }
 }
