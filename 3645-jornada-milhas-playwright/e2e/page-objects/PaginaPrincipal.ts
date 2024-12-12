@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from "@playwright/test";
-    
+
 export default class PaginaPrincipal {
   private readonly page: Page;
   private readonly botaoSomenteIda: Locator;
@@ -16,6 +16,7 @@ export default class PaginaPrincipal {
   private readonly containerOrigem: Locator;
   private readonly containerDestino: Locator;
   private readonly botaoComprar: Locator;
+  private readonly textoDataIda: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -45,6 +46,7 @@ export default class PaginaPrincipal {
     this.botaoBuscarPassagens = page.getByTestId("botao-buscar-passagens");
 
     this.textoIdaVolta = page.getByTestId("texto-ida-volta");
+    this.textoDataIda = page.getByTestId('texto-data-ida');
     this.containerOrigem = page.getByTestId("container-origem");
     this.containerDestino = page.getByTestId("container-destino");
     this.botaoComprar = page.getByTestId("botao-comprar");
@@ -91,7 +93,7 @@ export default class PaginaPrincipal {
     await this.campoDropdownDestino.fill(destino);
     await this.campoDropdownDestino.press("Enter");
   }
-  async definirData(data: Date) {
+  async definirDataIda(data: Date) {
     const dataFormatada = data.toLocaleString("en-US", { dateStyle: "short" });
     await this.campoDataIda.fill(dataFormatada);
   }
@@ -100,14 +102,22 @@ export default class PaginaPrincipal {
     await this.botaoBuscarPassagens.click();
   }
 
+  private obterDataExibicao(data: Date) {
+    return data.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit' });
+  }
+
   async estaMostrandoPassagem(
-    tipoTrajeto: "Somente ida" | "Ida e volta",
+    tipoTrajeto: 'Somente ida' | 'Ida e volta',
     origem: string,
-    destino: string
+    destino: string,
+    dataIda: Date
   ) {
+    const dataIdaExibicao = this.obterDataExibicao(dataIda); // adicionado
+
     await expect(this.textoIdaVolta).toHaveText(tipoTrajeto);
     await expect(this.containerOrigem).toContainText(origem);
     await expect(this.containerDestino).toContainText(destino);
+    await expect(this.textoDataIda).toHaveText(dataIdaExibicao); // adicionado
     await expect(this.botaoComprar).toBeVisible();
   }
 }

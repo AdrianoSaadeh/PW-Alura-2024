@@ -1,9 +1,10 @@
 import test from "@playwright/test";
-import PaginaPrincipal from "./page-objects/PaginaPrinciapl";
+import PaginaPrincipal from "./page-objects/PaginaPrincipal";
 
 test.describe("Buscar Passagens", () => {
     test("Deve buscar somente passagem de ida", async ({ page }) => {
         const paginaPrincipal = new PaginaPrincipal(page);
+        const dataIda = new Date();
 
         await paginaPrincipal.visitar();
         await paginaPrincipal.definirSomenteIda();
@@ -15,9 +16,9 @@ test.describe("Buscar Passagens", () => {
         await paginaPrincipal.fecharModalPassageiros();
 
         await paginaPrincipal.definirOrigemEDestino("minas", "rio de janeiro");
-        await paginaPrincipal.definirData(new Date());
+        await paginaPrincipal.definirDataIda(dataIda); // usamos a variável
         await paginaPrincipal.buscarPassagens();
 
-        await paginaPrincipal.estaMostrandoPassagem('Somente ida', 'Minas Gerais', 'Rio de Janeiro');
+        await paginaPrincipal.estaMostrandoPassagem('Somente ida', 'Minas Gerais', 'Rio de Janeiro', dataIda);
     });
 });
